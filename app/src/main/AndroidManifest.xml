@@ -11,6 +11,8 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="minMaps"
         android:supportsRtl="true"
         android:theme="@style/Theme.Minmaps"
         tools:targetApi="31">
@@ -30,6 +32,17 @@
                 <action android:name="android.intent.action.SCREEN_OFF" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name="com.sameerasw.minmaps.MinMapsQSTile"
+            android:exported="true"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:label="Maps Power Saving"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
 
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
