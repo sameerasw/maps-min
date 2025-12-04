@@ -6,7 +6,6 @@ import android.graphics.drawable.Icon
 import android.provider.Settings
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import com.sameersw.mapsmin.R
 import rikka.shizuku.Shizuku
 
 class MinMapsQSTile : TileService() {

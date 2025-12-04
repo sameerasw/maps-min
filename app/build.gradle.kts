@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.sameersw.mapsmin"
+    namespace = "com.sameerasw.minmaps"
     compileSdk {
         version = release(36)
     }
