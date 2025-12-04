@@ -4,6 +4,8 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -11,70 +13,100 @@ import androidx.appcompat.app.AppCompatActivity
 import rikka.shizuku.Shizuku
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var shizukuStatusView: TextView
+    private lateinit var notificationStatusView: TextView
+    private lateinit var navigationStatusView: TextView
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val updateRunnable = object : Runnable {
+        override fun run() {
+            refreshStatus()
+            handler.postDelayed(this, 1000)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Create a simple LinearLayout to display status
-        val layout = LinearLayout(this).apply {
+        val mainLayout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+            fitsSystemWindows = true
         }
 
-        // Shizuku permission status
-        val shizukuStatus = TextView(this).apply {
-            text = "Shizuku Permission: ${if (hasShizukuPermission()) "✓ GRANTED" else "✗ NOT GRANTED"}"
+        val statusLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(16, 24, 16, 16)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+        shizukuStatusView = TextView(this).apply {
             textSize = 16f
             setPadding(0, 8, 0, 8)
         }
-        layout.addView(shizukuStatus)
+        statusLayout.addView(shizukuStatusView)
 
-        // Notification Listener permission status
-        val notificationStatus = TextView(this).apply {
-            text = "Notification Listener: ${if (isNotificationListenerEnabled()) "✓ ENABLED" else "✗ NOT ENABLED"}"
+        notificationStatusView = TextView(this).apply {
             textSize = 16f
             setPadding(0, 8, 0, 8)
         }
-        layout.addView(notificationStatus)
+        statusLayout.addView(notificationStatusView)
 
-        // Navigation Notification status
-        val navNotifStatus = TextView(this).apply {
-            text = "Has Navigation Notification: ${if (MapsState.hasNavigationNotification) "✓ YES" else "✗ NO"}"
+        navigationStatusView = TextView(this).apply {
             textSize = 16f
             setPadding(0, 8, 0, 8)
         }
-        layout.addView(navNotifStatus)
+        statusLayout.addView(navigationStatusView)
 
-        // Instructions
         val instructions = TextView(this).apply {
-            text = """
-                To enable Notification Listener:
-                1. Go to Settings > Apps and notifications > Notification access
-                2. Find "Min Maps" and enable it
-                
-                To enable Shizuku:
-                1. Install Shizuku Manager from GitHub
-                2. Grant API access to this app
-            """.trimIndent()
-            textSize = 14f
+            text = "Enable Notification Listener in Settings, grant Shizuku permission, then start Maps navigation and lock your screen."
+            textSize = 13f
             setPadding(0, 16, 0, 8)
         }
-        layout.addView(instructions)
+        statusLayout.addView(instructions)
 
-        // Add button to open notification access settings
-        val openSettingsBtn = TextView(this).apply {
-            text = "→ Open Notification Access Settings"
+        val settingsBtn = TextView(this).apply {
+            text = "→ Notification Access Settings"
             textSize = 14f
-            setPadding(0, 16, 0, 8)
+            setPadding(16, 16, 16, 16)
             setBackgroundColor(0xFF6200EE.toInt())
             setTextColor(0xFFFFFFFF.toInt())
             isClickable = true
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
             setOnClickListener {
                 startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
             }
         }
-        layout.addView(openSettingsBtn)
+        mainLayout.addView(statusLayout)
+        mainLayout.addView(settingsBtn)
 
-        setContentView(layout)
+        setContentView(mainLayout)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        handler.post(updateRunnable)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        handler.removeCallbacks(updateRunnable)
+    }
+
+    private fun refreshStatus() {
+        shizukuStatusView.text = "Shizuku: ${if (hasShizukuPermission()) "✓" else "✗"}"
+        notificationStatusView.text = "Listener: ${if (isNotificationListenerEnabled()) "✓" else "✗"}"
+        navigationStatusView.text = "Navigation: ${if (MapsState.hasNavigationNotification) "✓" else "✗"}"
     }
 
     private fun hasShizukuPermission(): Boolean {
@@ -90,7 +122,6 @@ class MainActivity : AppCompatActivity() {
             contentResolver,
             "enabled_notification_listeners"
         ) ?: return false
-
         val componentName = ComponentName(this, NotificationListener::class.java)
         return enabledServices.contains(componentName.flattenToString())
     }
