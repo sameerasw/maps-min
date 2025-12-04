@@ -13,7 +13,7 @@ Google Maps power saving mode for any device with Shizuku
   <img src="https://github.com/user-attachments/assets/343dd14b-6190-47d3-af3a-342d4cc2a134" width="48%" />
 </p>
 
-> Currently the pwoer saving mode for Google Maps is only available on the latest Pixel devices. The activity is present in the app but is not accessible with regular privilages so with elevated shizuku priv, we can launch it on any device. This will not show on the AOD, rather it will replace the navigation view that usually appear over the lock screen in min mode. And with a tap, it will switch to the regular view and allow you to interact with the map and UI.
+> Currently the power saving mode for Google Maps is only available on the latest Pixel devices. The activity is present in the app but is not accessible with regular privilages so with elevated shizuku priv, we can launch it on any device. This will not show on the AOD, rather it will replace the navigation view that usually appear over the lock screen in min mode. And with a tap, it will switch to the regular view and allow you to interact with the map and UI.
 
 > To uninstall, either long press the QS tile or find the app in all apps list in settings and uninstall from the app info page as it does not have a launchable activity cluttering the apps list. 
 
