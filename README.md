@@ -1,6 +1,8 @@
 # maps-min
 Google Maps power saving mode for any device with Shizuku
 
+> # Deprecated app: Feature moved to [Essentials app](https://github.com/sameerasw/essentials)
+
 ### Requirements
 - Shizuku - for executing the min mode activity
 - Notification listener - to detect the Google Map's "Navigation" category notification
